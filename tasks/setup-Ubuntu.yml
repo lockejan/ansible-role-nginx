@@ -30,7 +30,7 @@
 
 - name: Ensure nginx will reinstall if the repo was just added.
   apt:
-    name: nginx
+    name: "{{ nginx_package_name }}"
     state: absent
   when: nginx_repo_added is changed
   tags:
