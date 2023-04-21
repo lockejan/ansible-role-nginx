@@ -19,7 +19,7 @@
 
 - name: Add nginx stable repository
   apt_repository:
-    repo: "deb http://nginx.org/packages/\
+    repo: "deb [arch=amd64] http://nginx.org/packages/\
       {{ 'mainline/' if nginx_repo_mainline else ''}}ubuntu \
       {{ ansible_distribution_release }} nginx"
     state: present
