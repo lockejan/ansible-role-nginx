@@ -31,6 +31,11 @@
 - import_tasks: vhosts.yml
 
 # Nginx setup.
+- name: Install nginx certbot plugin
+  package:
+    name: python3-certbot-nginx
+    state: present
+
 - name: Ensure opt/cerbot exists.
   file:
     path: "/opt/certbot"
