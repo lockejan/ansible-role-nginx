@@ -16,7 +16,7 @@
 - name: Add managed vhost config files.
   template:
     src: "{{ item.template|default(nginx_vhost_template) }}"
-    dest: "{{ nginx_vhost_path }}/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
+    dest: "{{ nginx_vhost_conf_path }}/{{ item.filename|default(item.server_name.split(' ')[0] ~ '.conf') }}"
     force: true
     owner: root
     group: "{{ root_group }}"
@@ -26,6 +26,21 @@
   notify: reload nginx
   tags:
     - skip_ansible_lint
+
+- name: Create symlinks to enable sites
+  file:
+    src: "{{ nginx_vhost_conf_path }}/{{ item.server_name.split(' ')[0] }}.conf"
+    dest: "{{ nginx_vhost_path }}/{{ item.server_name.split(' ')[0] }}"
+    state: link
+  with_items: "{{ nginx_vhosts }}"
+
+- name: Remove symlinks of disabled sites
+  file:
+    dest: "{{ nginx_vhost_path }}/{{ item.server_name.split(' ')[0] }}.conf"
+    state: absent
+  when: item.state|default('present') == 'absent'
+  with_items: "{{ nginx_vhosts }}"
+  notify: reload nginx
 
 - name: Remove managed vhost config files.
   file:
